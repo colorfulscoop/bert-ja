@@ -23,7 +23,7 @@ $ cd ..
 ## Training details
 
 <details>
-<summary>BERT-base-ja v1</summary>
+<summary>bert-base-ja v1</summary>
 
 ### base-v1
 
