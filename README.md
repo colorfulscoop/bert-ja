@@ -1,5 +1,7 @@
 # Train BERT
 
+This repository provides [BERT](https://arxiv.org/abs/1810.04805) Japanese models trained as Hugging Face [transformers](https://github.com/huggingface/transformers) models.
+
 ## Prepare data
 
 ```sh
@@ -34,9 +36,10 @@ Create a working directory and clone a repository.
 [TODO] Need to write a specific version to clone.
 
 ```sh
-$ mkdir train/base-v1
-$ cd train/base-v1
 $ git clone https://github.com/colorfulscoop/convmodel
+$ cd convmodel
+$ git checkout 163078
+$ cd ..
 ```
 
 Copy training data to working directory.
@@ -67,20 +70,20 @@ The raw trained model is saved under output/spm, while transformers model is sav
 Prepare JSON Lines format training dataset.
 
 ```sh
-(container)$ python3 prepare_train_data.py --filename data/train.txt  --buffer_size 10000 >data/train.jsonl
-(container)$ python3 prepare_train_data.py --filename data/valid.txt  --buffer_size 10000 >data/valid.jsonl
-(container)$ python3 prepare_train_data.py --filename data/test.txt  --buffer_size 10000 >data/test.jsonl
+(container)$ python3 prepare_train_data.py --filename data/train.txt  --buffer_size 10000 --tokenizer_model output/model --max_seq_len 512 --seed 1000 --get_raw False >data/train.jsonl
+(container)$ python3 prepare_train_data.py --filename data/valid.txt  --buffer_size 10000 --tokenizer_model output/model --max_seq_len 512 --seed 1000 --get_raw True >data/valid.jsonl
+(container)$ python3 prepare_train_data.py --filename data/test.txt  --buffer_size 10000 --tokenizer_model output/model --max_seq_len 512 --seed 1000 --get_raw True >data/test.jsonl
+
 ```
 
-Set up config file.
-First, generate a default config file.
+Generate a default PyTorch Lightning config file and copy it.
 
 ```
 (container)$ python3 trainer.py --print_config >default_config.yaml
 (container)$ cp default_config.yaml config.yaml
 ```
 
-Then modify config.yaml.
+Modify config.yaml
 
 ```sh
 (container)$ diff default_config.yaml config.yaml
@@ -100,8 +103,12 @@ Then modify config.yaml.
 <   accumulate_grad_batches: 1
 <   max_epochs: null
 ---
->   accumulate_grad_batches: 16
->   max_epochs: 1
+>   accumulate_grad_batches: 32
+>   max_epochs: 13
+31c31
+<   val_check_interval: 1.0
+---
+>   val_check_interval: 320000
 36c36
 <   precision: 32
 ---
@@ -110,11 +117,18 @@ Then modify config.yaml.
 <   deterministic: false
 ---
 >   deterministic: true
-57a58,60
+57a58,67
 >   callbacks:
->     - class_path: pytorch_lightning.callbacks.LearningRateMonitor
->     - class_path: pytorch_lightning.callbacks.GPUStatsMonitor
-59,62c62,65
+>    - class_path: pytorch_lightning.callbacks.LearningRateMonitor
+>    - class_path: pytorch_lightning.callbacks.GPUStatsMonitor
+>    - class_path: pytorch_lightning.callbacks.ModelCheckpoint
+>      init_args:
+>        monitor: val_loss
+>        mode: min
+>        every_n_train_steps: 10000
+>        save_top_k: 3
+>
+59,62c69,72
 <   tokenizer_model: null
 <   train_file: null
 <   valid_file: null
@@ -124,21 +138,46 @@ Then modify config.yaml.
 >   train_file: data/train.jsonl
 >   valid_file: data/valid.jsonl
 >   test_file: data/test.jsonl
-74a78
->
+69c79
+<   batch_size: 2
+---
+>   batch_size: 8
+72c82
+<   shuffle_buffer_size: 1000
+---
+>   shuffle_buffer_size: 10000
+74c84
+<   num_warmup_steps: 0
+---
+>   num_warmup_steps: 10000
 ```
 
-Finally, start training
-
+Start training.
 
 ```sh
 (container)$ python3 trainer.py --config config.yaml
 ```
 
-#### Check log
-
-Use tensorboard to check log.
+To check progress, open another terminal and run Tensorboard.
 
 ```sh
-$ docker container run -p 6006:6006 -v $(pwd):/work -w /work --rm -it tensorflow/tensorflow:2.4.1-gpu tensorboard --logdir lightning_logs --host 0.0.0.0
+docker container run -p 6006:6006 -v $(pwd):/work -w /work --rm -it tensorflow/tensorflow:2.4.1-gpu tensorboard --logdir lightning_logs --host 0.0.0.0
 ```
+
+#### Export Hugging Face transofmrers model
+
+After completing your training, convert PyTorch Lightning model to Hugging Face transformers model.
+
+```sh
+(container)$ python export_model.py --ckpt_path lightning_logs/version_5/checkpoints/epoch\=2-step\=189999.ckpt --config lightning_logs/version_5/config.yaml --output_dir model
+```
+
+#### Convert tokenizer model
+
+The behavior of AlbertTokenizer and AlbertTokenizerFast is different. Our expectation is AlbertTokenizer; however, the default behavior of AutoTokenizer is using AlbertTokenizerFast.
+When using AutoTokenizer, `use_fast=False` can solve this inconsistency behavior.
+However, when using Hugging Face Inference API, there are no ways to pass `use_fast` via config.json or model card.
+
+We realized this after completing training.
+We decided to use [DebertaV2Tokenizer](https://huggingface.co/transformers/model_doc/deberta_v2.html?highlight=sentencepiece#transformers.DebertaV2Tokenizer)
+because it does not provide any Fast tokenizers and its default behavior is what we expected.
