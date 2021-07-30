@@ -58,7 +58,7 @@ Training code is available in [a GitHub repository](https://github.com/colorfuls
 First, install dependecies.
 
 ```sh
-$ pip install torch==1.8.0 transformers==4.8.2 sentencepiece==0.1.95 tensorflow==2.5.0
+$ pip install torch==1.8.0 transformers==4.8.2 sentencepiece==0.1.95
 ```
 
 Then use `transformers.pipeline` to try mask fill task.

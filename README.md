@@ -332,6 +332,19 @@ $ cp model_card.md release/bert-base-ja/README.md
 $ cp CHANGELOG.md release/bert-base-ja
 ```
 
+To enable an inference API on Model Hub, modify an architecture in a release/bert-base-ja/config.json file
+
+```sh
+ {
+   "_name_or_path": "release/bert-base-ja",
+   "architectures": [
+-    "BertForPreTraining"
++    "BertForMaskedLM"
+   ],
+   "attention_probs_dropout_prob": 0.1,
+   "bos_token_id": 2,
+```
+
 Finally commit it and push to Model Hub.
 
 ```sh
