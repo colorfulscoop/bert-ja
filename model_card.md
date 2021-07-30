@@ -70,6 +70,8 @@ Then use `transformers.pipeline` to try mask fill task.
 [{'sequence': '専門として工学を専攻しています', 'score': 0.03630176931619644, 'token': 3988, 'token_str': '工学'}, {'sequence': '専門として政治学を専攻しています', 'score': 0.03547220677137375, 'token': 22307, 'token_str': '政治学'}, {'sequence': '専門として教育を専攻しています', 'score': 0.03162326663732529, 'token': 414, 'token_str': '教育'}, {'sequence': '専門として経済学を専攻しています', 'score': 0.026036914438009262, 'token': 6814, 'token_str': '経済学'}, {'sequence': '専門として法学を専攻しています', 'score': 0.02561848610639572, 'token': 10810, 'token_str': '法学'}]
 ```
 
+Note: specifying a `revision` option is recommended to keep reproducibility when downloading a model via `transformers.pipeline` or `transformers.AutoModel.from_pretrained` .
+
 ## License
 
 All the models included in this repository are licensed under [Creative Commons Attribution-ShareAlike 3.0](https://creativecommons.org/licenses/by-sa/3.0/).
