@@ -2,7 +2,7 @@
 language: ja
 datasets: wikipedia
 widget:
-- text: "得意な科目は[MASK]です"
+- text: "得意な科目は[MASK]です。"
 license: cc-by-sa-3.0
 ---
 
