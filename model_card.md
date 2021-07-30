@@ -65,7 +65,7 @@ Then use `transformers.pipeline` to try mask fill task.
 
 ```sh
 >>> import transformers
->>> pipeline = transformers.pipeline("fill-mask", "colorfulscoop/bert-base-ja")
+>>> pipeline = transformers.pipeline("fill-mask", "colorfulscoop/bert-base-ja", revision="v1.0")
 >>> pipeline("専門として[MASK]を専攻しています")
 [{'sequence': '専門として工学を専攻しています', 'score': 0.03630176931619644, 'token': 3988, 'token_str': '工学'}, {'sequence': '専門として政治学を専攻しています', 'score': 0.03547220677137375, 'token': 22307, 'token_str': '政治学'}, {'sequence': '専門として教育を専攻しています', 'score': 0.03162326663732529, 'token': 414, 'token_str': '教育'}, {'sequence': '専門として経済学を専攻しています', 'score': 0.026036914438009262, 'token': 6814, 'token_str': '経済学'}, {'sequence': '専門として法学を専攻しています', 'score': 0.02561848610639572, 'token': 10810, 'token_str': '法学'}]
 ```
