@@ -1,6 +1,7 @@
 ---
 language: ja
 datasets: wikipedia
+pipeline_tag: fill-mask
 widget:
 - text: "得意な科目は[MASK]です。"
 license: cc-by-sa-3.0
