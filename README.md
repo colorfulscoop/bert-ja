@@ -51,6 +51,7 @@ $ cp -r data/data/jawiki/20210620/data convmodel/trainer/bert/
 ```sh
 $ cd convmodel/
 $ docker container run --gpus all --ipc=host --rm -it -v $(pwd):/work -w /work nvidia/cuda:11.1-devel-ubuntu20.04 bash
+(container)$ apt update && apt install -y python3 python3-pip git
 (container)$ pip3 install torch==1.8.1+cu111 -f https://download.pytorch.org/whl/torch_stable.html
 (container)$ pip install .
 (container)$ cd trainer/bert/
