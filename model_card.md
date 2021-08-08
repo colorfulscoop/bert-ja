@@ -75,8 +75,17 @@ Note: specifying a `revision` option is recommended to keep reproducibility when
 
 ## License
 
+Copyright (c) 2021 Colorful Scoop
+
 All the models included in this repository are licensed under [Creative Commons Attribution-ShareAlike 3.0](https://creativecommons.org/licenses/by-sa/3.0/).
 
 **Disclaimer:** The model potentially has possibility that it generates similar texts in the training data, texts not to be true, or biased texts. Use of the model is at your sole risk. Colorful Scoop makes no warranty or guarantee of any outputs from the model. Colorful Scoop is not liable for any trouble, loss, or damage arising from the model output.
 
-**Author:** Colorful Scoop
+---
+
+This model utilizes the following data as training data
+
+* **Name:** ウィキペディア (Wikipedia): フリー百科事典
+* **Credit:** https://ja.wikipedia.org/
+* **License:** [Creative Commons Attribution-ShareAlike 3.0](https://creativecommons.org/licenses/by-sa/3.0/)
+* **Link:** https://ja.wikipedia.org/
